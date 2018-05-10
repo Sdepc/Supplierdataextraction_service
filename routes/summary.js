@@ -24,31 +24,35 @@ res.write(JSON.stringify(obj, null, 3));
     
 
 
-  router.get('/contractcontent', function(req,res){
-    var http = require('http');
-     var fs = require('fs');
-     //var path = require('path');
-   var test1 = './output/';
-   //var a = req.body.filename;
-   var a = '1525697142871Contract-A';
-   console.log(a);
-   fileExt = 'txt';
-   b = a + '.' + fileExt;
-   c = test1 + b;
-   console.log(b);
-   fs.readdir(test1, function(err, items){
-         console.log(items);
-   fs.exists(c, function(exists){
-       console.log("file exists ? " , exists);
-       var file = fs.readFileSync(c, "utf8");
-       console.log(file);
-       res.writeHead(200,{"Content-Type" : "text/html"});
-       res.write('<html><p>'+file+'</p></html>');
-   
-   
-   });
-   });
-   });
+ router.get('/contractcontent', function(req,res){
+  var http = require('http');
+   var fs = require('fs');
+   //var path = require('path');
+ var test1 = './output/';
+ 
+ 
+ var a = req.query.filename;
+ 
+ //var a = '1525697142871Contract-A';
+ console.log(a);
+ fileExt = 'txt';
+ b = a + '.' + fileExt;
+ c = test1 + b;
+ console.log(b);
+ fs.readdir(test1, function(err, items){
+       console.log(items);
+ fs.exists(c, function(exists){
+     console.log("file exists ? " , exists);
+     var file = fs.readFileSync(c, "utf8");
+     console.log(file);
+     res.writeHead(200,{"Content-Type" : "text/html"});
+     res.write('<html><p>'+file+'</p></html>');
+ 
+ 
+ });
+ });
+ });
+ 
 
 
    router.post('/purge', function (req, res, next) {
