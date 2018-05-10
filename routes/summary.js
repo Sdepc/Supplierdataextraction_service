@@ -6,39 +6,31 @@ var fs = require('fs');
 
 
 /* GET home page.*/
-router.get('/processedfiles', function(req, res, next) {
+router.get('/contractnames', function(req, res, next) {
 
-  var testFolder = './scripts/processed/';
+  var testFolder = './output/';
   var fs = require('fs');
-  //res.setHeader('content-Type', 'application/json');
-  //res.writeHead(200, {'content-Type': 'application/plain'});
+  
   res.setHeader('Content-Type', 'application/json');
+  var obj =[];
   fs.readdirSync(testFolder).forEach(file => {
-    //console.log(file);
-    //var obj =[];
-    //var a = obj.push(path.basename(file,'.pdf'));
+    
+    obj.push(path.basename(file,'.txt'));
 
-    var a = path.basename(file,'.pdf');
-    console.log(a);
-    var b = JSON.stringify({Filename:a}, null, 3);
-    //var b = JSON.parse(a)
-
-     console.log(b)
-     res.write(b);
-
-
-   });
-   });
+  });
+  
+res.write(JSON.stringify(obj, null, 3));
+ });
     
 
 
-  router.get('/processedcontent', function(req,res){
+  router.get('/contractcontent', function(req,res){
     var http = require('http');
      var fs = require('fs');
      //var path = require('path');
-   var test1 = './scripts/output/';
-   var a = req.body.filename;
-   //var a = '1525697142871Contract-A';
+   var test1 = './output/';
+   //var a = req.body.filename;
+   var a = '1525697142871Contract-A';
    console.log(a);
    fileExt = 'txt';
    b = a + '.' + fileExt;
