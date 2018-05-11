@@ -31,12 +31,12 @@ router.post("/upload", upload.array("uploads[]", 12), function (req, res) {
 
 
 router.post('/loadfilescontent', function (req, res, next) {
-    var a = req.body.files;
+    var a = req.body;
     console.log(a);
     var element = JSON.stringify(a);
        console.log(element);
          fs.readFile("./database/files.json", 'utf8', function(err, json) {
-             var array = json;
+             var array = JSON.parse(JSON.stringify(json));
              console.log(array);
              var b = array.concat(element);
              console.log(b);
