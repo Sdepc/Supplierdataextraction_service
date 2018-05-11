@@ -19,7 +19,7 @@ var files_data=[];
 
 /* GET Files listing. */
 router.get('/getfilescontent', function (req, res, next) {
-    var json = JSON.parse(fs.readFileSync('./new.json', 'utf8'));
+    var json = JSON.parse(fs.readFileSync('./database/files.json', 'utf8'));
     res.setHeader('Content-Type', 'application/json');
     console.log(json);
     res.send(JSON.stringify(json));
@@ -31,19 +31,22 @@ router.post("/upload", upload.array("uploads[]", 12), function (req, res) {
 
 
 router.post('/loadfilescontent', function (req, res, next) {
-    //var table=[];
     var a = req.body.files;
     console.log(a);
-    console.log("---Old data--- :"+files_data);
-    files_data=files_data.concat(a);
-    console.log("---New data--- :"+files_data);
-    fs.writeFile('./database/files.json', files_data, function(err,data){
-      if(err){
-        return console.log(err);
-      }
-      console.log("done");
-    });
-    });
-
+    var element = JSON.stringify(a);
+       console.log(element);
+         fs.readFile("./database/files.json", 'utf8', function(err, json) {
+             var array = json;
+             console.log(array);
+             var b = array.concat(element);
+             console.log(b);
+             fs.appendFile("./new.json", b, function(err){
+               if (err) throw err;
+               console.log("saved");
+             });
+        console.log("The file was saved!");
+             });
+res.end('{"msg": "success"}');
+     });
 
 module.exports = router;
