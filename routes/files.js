@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var multer = require('multer');
+var fs = require('fs');
 
 var storage = multer.diskStorage({
     // destination
@@ -12,6 +13,8 @@ var storage = multer.diskStorage({
     }
 });
 var upload = multer({ storage: storage });
+
+var files_data=[];
 
 
 /* GET Files listing. */
