@@ -15,16 +15,32 @@ var upload = multer({ storage: storage });
 
 
 /* GET Files listing. */
-router.get('/', function (req, res, next) {
-    res.send('Files');
-});
-
+router.get('/getfilescontent', function (req, res, next) {
+    var json = JSON.parse(fs.readFileSync('./new.json', 'utf8'));
+    res.setHeader('Content-Type', 'application/json');
+    console.log(json);
+    res.send(JSON.stringify(json));
+    });
 router.post("/upload", upload.array("uploads[]", 12), function (req, res) {
     console.log('files', req.files);
     res.send(req.files);
 });
 
 
+router.post('/loadfilescontent', function (req, res, next) {
+    //var table=[];
+    var a = req.body.files;
+    console.log(a);
+    console.log("---Old data--- :"+files_data);
+    files_data=files_data.concat(a);
+    console.log("---New data--- :"+files_data);
+    fs.writeFile('./database/files.json', files_data, function(err,data){
+      if(err){
+        return console.log(err);
+      }
+      console.log("done");
+    });
+    });
 
 
 module.exports = router;
