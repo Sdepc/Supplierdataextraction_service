@@ -40,7 +40,7 @@ router.post('/loadfilescontent', function (req, res, next) {
              console.log(array);
              var b = array.concat(element);
              console.log(b);
-             fs.appendFile("./new.json", b, function(err){
+             fs.appendFile("./database/files.json", b, function(err){
                if (err) throw err;
                console.log("saved");
              });
