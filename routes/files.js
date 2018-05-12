@@ -37,10 +37,12 @@ router.post('/loadfilescontent', function (req, res, next) {
        console.log(element);
          fs.readFile("./database/files.json", 'utf8', function(err, json) {
              var array = JSON.parse(JSON.stringify(json));
-             console.log(array);
+             console.log("old data:---" +array);
+             //var array = new Array();
              var b = array.concat(element);
-             console.log(b);
-             fs.appendFile("./database/files.json", b, function(err){
+             var c = JSON.parse(JSON.stringify(b));
+             console.log("new data:----" +c);
+             fs.appendFile("./database/files.json", c, function(err){
                if (err) throw err;
                console.log("saved");
              });
@@ -48,5 +50,27 @@ router.post('/loadfilescontent', function (req, res, next) {
              });
 res.end('{"msg": "success"}');
      });
+
+router.post('/comparejsons', function (req, res, next) {
+    //obj1={a:1,b:2,c:3,d:4};
+//obj2={a:2,b:5,c:3,d:4};
+
+var obj1 = "./database/files.json";
+var obj2 = "./database/file.json";
+function findKeysByValue(obj, v) {
+    var results = [];
+    for (var k in obj2) {
+        if (obj2.hasOwnProperty(k) && v == obj1[k]) {
+            results.push(k);
+        }
+    }
+    return results;
+}
+console.log(findKeysByValue(obj2, obj1['status']));
+
+
+});
+
+
 
 module.exports = router;

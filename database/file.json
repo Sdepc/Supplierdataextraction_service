@@ -1,0 +1,23 @@
+{"file":[
+    {
+      "id": 1,
+      "filename": "File_Name4.pdf",
+      "uploaded_by": "pgajula",
+      "date_of_upload": "05/12/2018",
+      "status": "Processed"
+    },
+    {
+      "id": 1,
+      "filename": "File_Name5.pdf",
+      "uploaded_by": "pgajula",
+      "date_of_upload": "05/12/2018",
+      "status": "Processed"
+    },
+    {
+      "id": 1,
+      "filename": "File_Name6.pdf",
+      "uploaded_by": "pgajula",
+      "date_of_upload": "05/12/2018",
+      "status": "Processed"
+    }
+  ]}

@@ -71,4 +71,67 @@ res.write(JSON.stringify(obj, null, 3));
   });
   
 
+
+  //purge code
+
+
+  function daysDiff(now, fileDate) {
+    var timeDiff = Math.abs(now.getTime() - fileDate.getTime());
+    return Math.ceil(timeDiff / (1000 * 3600 * 24));
+}
+
+function deleteOlderFiles(entries) {
+    var i;
+    var currentDate = new Date();
+    for (i=0; i<entries.length; i++) {
+        if(entries[i].isFile) {
+            entries[i].file(function(file) {
+                if(daysDiff(currentDate, file.lastModifiedDate) > 30) {
+                    entries[i].remove(function(){
+                        console.log("File removed");
+                    }, function(){
+                        console.log("Error while removing file");
+                    });
+                }
+            }), error);
+        }
+    }
+}
+
+function fail(error) {
+    alert("Failed during operations: " + error.code);
+    
+}
+
+// Get a directory reader
+var directoryEntry = new DirectoryEntry(name, '/dell');
+var directoryReader = directoryEntry.createReader();
+
+// Get a list of all the entries in the directory
+directoryReader.readEntries(deleteOlderFiles, fail);
+_
+
+//date purge code
+
+
+var fs = require('fs')
+var util = require('util');
+
+var stats = fs.statSync("C:\\Users\\sk00507400\\Desktop\\v1.txt");
+var mtime = new Date(util.inspect(stats.mtime));
+
+
+var dateTime = require('node-datetime');
+var dt = dateTime.create();
+var formatted = dt.format('Y-m-d H:M:S');
+console.log("current time : " +formatted);
+console.log("file modified time : " +mtime);
+
+
+
+
+
+
+
+
 module.exports = router;
