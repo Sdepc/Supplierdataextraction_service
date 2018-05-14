@@ -69,69 +69,35 @@ res.write(JSON.stringify(obj, null, 3));
       }
     });
   });
-  
 
 
-  //purge code
 
-
-  function daysDiff(now, fileDate) {
-    var timeDiff = Math.abs(now.getTime() - fileDate.getTime());
-    return Math.ceil(timeDiff / (1000 * 3600 * 24));
-}
-
-function deleteOlderFiles(entries) {
-    var i;
-    var currentDate = new Date();
-    for (i=0; i<entries.length; i++) {
-        if(entries[i].isFile) {
-            entries[i].file(function(file) {
-                if(daysDiff(currentDate, file.lastModifiedDate) > 30) {
-                    entries[i].remove(function(){
-                        console.log("File removed");
-                    }, function(){
-                        console.log("Error while removing file");
-                    });
-                }
-            }), error);
-        }
-    }
-}
-
-function fail(error) {
-    alert("Failed during operations: " + error.code);
-    
-}
-
-// Get a directory reader
-var directoryEntry = new DirectoryEntry(name, '/dell');
-var directoryReader = directoryEntry.createReader();
-
-// Get a list of all the entries in the directory
-directoryReader.readEntries(deleteOlderFiles, fail);
-_
-
-//date purge code
-
-
+ router.post('/oldfiles', function (req, res, next) {
+    console.log('POST');
+    console.log(req.body);
+//purging older files
 var fs = require('fs')
-var util = require('util');
-
-var stats = fs.statSync("C:\\Users\\sk00507400\\Desktop\\v1.txt");
-var mtime = new Date(util.inspect(stats.mtime));
-
-
-var dateTime = require('node-datetime');
-var dt = dateTime.create();
-var formatted = dt.format('Y-m-d H:M:S');
-console.log("current time : " +formatted);
-console.log("file modified time : " +mtime);
-
-
-
-
-
-
+var dirPath =  './output/';
+//var file = '/Contract-1.pdf'
+fs.readdir( dirPath, function( err, files ) {
+    if ( err ) return console.log( err );
+    files.forEach(function( file ) {
+        var filePath = dirPath + file;
+        fs.stat( filePath, function( err, stat ) {
+            if ( err ) return console.log( err );
+            var livesUntil = new Date();
+//setting hours i.e.(24*30) for purging 30 days older files
+            livesUntil.setHours(livesUntil.getHours() - 720 );
+            if ( stat.ctime < livesUntil ) {
+                fs.unlink( filePath, function( err ) {
+                    if ( err ) return console.log( err );
+                });
+              }
+				console.log("sucessfully deleted the older files");
+            });
+        });
+    });
+  });
 
 
 module.exports = router;
