@@ -32,9 +32,9 @@ router.post("/upload", upload.array("uploads[]", 12), function (req, res) {
 
 
 
-router.post('/updatefilesjson', function (req, res, next) {
-
-
+router.put('/updatefilesjson', function (req, res, next) {
+    var input = req.body.files;
+  
 
 
 });
@@ -46,7 +46,7 @@ router.post('/savefilesjson', function (req, res, next) {
     var input = req.body.files;
     //console.log(input);
     files_data = files_data.concat(input);
-    var json_data_file = { "total_files": files_data };
+    var json_data_file = { "files": files_data };
 
     jsonfile.writeFile("./database/files.json", json_data_file, function (err) {
         if (err) throw err;
