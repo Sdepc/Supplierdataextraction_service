@@ -31,6 +31,17 @@ router.post("/upload", upload.array("uploads[]", 12), function (req, res) {
 });
 
 
+
+router.post('/updatefilesjson', function (req, res, next) {
+
+
+
+
+});
+
+
+
+
 router.post('/savefilesjson', function (req, res, next) {
     var input = req.body.files;
     //console.log(input);
