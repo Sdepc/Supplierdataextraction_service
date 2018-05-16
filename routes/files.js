@@ -22,7 +22,7 @@ router.post("/upload", upload.array("uploads[]", 12), function (req, res) {
     console.log(userName);
     for (var i = 0; i < req.files.length; i++) {
         console.log(req.files[i].originalname)
-        savefilesjson(req.files[i].originalname)
+        savefilesjson(req.files[i].originalname,userName)
     }
     res.send(req.files);
 });
@@ -31,17 +31,16 @@ router.post("/upload", upload.array("uploads[]", 12), function (req, res) {
 router.get('/getfilescontent', function (req, res, next) {
     var json = JSON.parse(fs.readFileSync('./database/files.json', 'utf8'));
     res.setHeader('Content-Type', 'application/json');
-    //console.log(json);
     res.send(json);
 });
 
-function savefilesjson(filename) {
+function savefilesjson(filename,Name) {
     var input =
         [
             {
                 "id": 1,
                 "filename": filename,
-                "uploaded_by": "pgajula",
+                "uploaded_by": Name,
                 "date_of_upload": Date.now(),
                 "status": "To be Processed"
             }
