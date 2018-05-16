@@ -3,7 +3,7 @@ var router = express.Router();
 var path = require('path');
 var fs = require('fs');
 
-/* GET home page.*/
+/* GET Contract Names*/
 router.get('/contractnames', function (req, res, next) {
   var input_path = './output/';
   var fs = require('fs');
@@ -16,7 +16,7 @@ router.get('/contractnames', function (req, res, next) {
 });
 
 
-
+/* GET Contract Content */
 router.get('/contractcontent', function (req, res) {
   var http = require('http');
   var fs = require('fs');
@@ -34,6 +34,7 @@ router.get('/contractcontent', function (req, res) {
   });
 });
 
+/* Post Purge*/
 router.post('/purge', function (req, res) {
   var outputpath = './output/';
   var files = req.body.files;
