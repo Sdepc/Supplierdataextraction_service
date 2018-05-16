@@ -3,18 +3,16 @@ var router = express.Router();
 var path = require('path');
 var fs = require('fs');
 
-
-
 /* GET home page.*/
 router.get('/contractnames', function (req, res, next) {
-var input_path = './output/';
-var fs = require('fs');
-res.setHeader('Content-Type', 'application/json');
+  var input_path = './output/';
+  var fs = require('fs');
+  res.setHeader('Content-Type', 'application/json');
   var obj = [];
   fs.readdirSync(input_path).forEach(file => {
-  obj.push(path.basename(file, '.txt'));
-});
-res.write(JSON.stringify(obj, null, 3));
+    obj.push(path.basename(file, '.txt'));
+  });
+  res.write(JSON.stringify(obj, null, 3));
 });
 
 
@@ -22,78 +20,65 @@ res.write(JSON.stringify(obj, null, 3));
 router.get('/contractcontent', function (req, res) {
   var http = require('http');
   var fs = require('fs');
-  //var path = require('path');
   var input_path = './output/';
-
-
   var input = req.query.filename;
-
-  //var a = '1525697142871Contract-A';
-  //console.log(a);
   var fileExtension = 'html';
   var file_name = input + '.' + fileExtension;
   var total_path = input_path + file_name;
-  //console.log(b);
+
   fs.readdir(input_path, function (err, items) {
-    //console.log(items);
     fs.exists(c, function (exists) {
-      //console.log("file exists ? ", exists);
       var file = fs.readFileSync(c, "utf8");
-      //console.log(file);
-      //res.writeHead(200,{"Content-Type" : "text/html"});
-
       res.send(file);
-
-
     });
   });
 });
 
+router.post('/purge', function (req, res) {
+  var outputpath = './output/';
+  var files = req.body.files;
+  var days = req.body.days;
+  if (days == true) {
+    //delete the 30 days older files
+    olderdaysfiles(outputpath);
+    deleteFiles(outputpath, files);
+  }
+  else {
+    deleteFiles(outputpath, files);
+  }
 
-
-router.post('/purge', function (req, res, next) {
-  //console.log('POST');
-  //console.log(req.body);
-  var directory = 'output';
-  fs.readdir(directory, (err, files) => {
-    if (err) throw err;
-    for (const file of files) {
-      fs.unlink(path.join(directory, file), err => {
-        if (err) throw err;
-        res.send('successfully deleted');
+  function olderdaysfiles(dirPath) {
+    // var dirPath =  './output/';
+    fs.readdir(dirPath, function (err, files) {
+      if (err) return console.log(err);
+      files.forEach(function (file) {
+        var filePath = dirPath + file;
+        fs.stat(filePath, function (err, stat) {
+          if (err) return console.log(err);
+          var livesUntil = new Date();
+          //setting hours i.e.(24*30) for purging 30 days older files
+          livesUntil.setHours(livesUntil.getHours() - 720);
+          if (stat.ctime < livesUntil) {
+            fs.unlink(filePath, function (err) {
+              console.log("sucessfully deleted the older files");
+              if (err) return console.log(err);
+            });
+          }
+        });
+      });
+    });
+  }
+  function deleteFiles(dirname, files, callback) {
+    fileExt = 'txt';
+    for (var i = 0; i < files.length; i++) {
+      fs.unlink(dirname + files[i] + '.' + fileExt, function (err) {
+        if (err) {
+          console.error(err);
+          console.log('File has been Deleted');
+        }
       });
     }
-  });
+  }
 });
-
-
-
-router.post('/oldfiles', function (req, res, next) {
-  //console.log('POST');
-  //console.log(req.body);
-  //purging older files
-  var fs = require('fs')
-  var dirPath = './output/';
-  //var file = '/Contract-1.pdf'
-  fs.readdir(dirPath, function (err, files) {
-    if (err) return console.log(err);
-    files.forEach(function (file) {
-      var filePath = dirPath + file;
-      fs.stat(filePath, function (err, stat) {
-        if (err) return console.log(err);
-        var livesUntil = new Date();
-        //setting hours i.e.(24*30) for purging 30 days older files
-        livesUntil.setHours(livesUntil.getHours() - 720);
-        if (stat.ctime < livesUntil) {
-          fs.unlink(filePath, function (err) {
-            if (err) return console.log(err);
-          });
-        }
-        //console.log("sucessfully deleted the older files");
-      });
-    });
-  });
-});
-
 
 module.exports = router;
