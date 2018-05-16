@@ -18,7 +18,12 @@ var upload = multer({ storage: storage });
 var files_data = [];
 
 router.post("/upload", upload.array("uploads[]", 12), function (req, res) {
-    //console.log('files', req.files);
+    var userName = req.query.username;
+    console.log(userName);
+    for (var i = 0; i < req.files.length; i++) {
+        console.log(req.files[i].originalname)
+        savefilesjson(req.files[i].originalname)
+    }
     res.send(req.files);
 });
 
@@ -29,6 +34,25 @@ router.get('/getfilescontent', function (req, res, next) {
     //console.log(json);
     res.send(json);
 });
+
+function savefilesjson(filename) {
+    var input =
+        [
+            {
+                "id": 1,
+                "filename": filename,
+                "uploaded_by": "pgajula",
+                "date_of_upload": Date.now(),
+                "status": "To be Processed"
+            }
+        ]
+    files_data = files_data.concat(input);
+    var json_data_file = { "files": files_data };
+    jsonfile.writeFile("./database/files.json", json_data_file, function (err) {
+        if (err) throw err;
+    });
+}
+
 
 router.put('/updatefilesjson', function (req, res, next) {
     var input = req.body.files;
@@ -49,18 +73,7 @@ router.put('/updatefilesjson', function (req, res, next) {
     res.end('{"msg": "success"}');
 });
 
-router.post('/savefilesjson', function (req, res, next) {
-    var input = req.body.files;
-    //console.log(input);
-    files_data = files_data.concat(input);
-    var json_data_file = { "files": files_data };
 
-    jsonfile.writeFile("./database/files.json", json_data_file, function (err) {
-        if (err) throw err;
-        //console.log("saved");
-    });
-    res.end('{"msg": "success"}');
-});
 router.post('/deletefilesjson', function (req, res, next) {
     var removeUser = req.query.filename;
     var data = fs.readFileSync('./database/files.json');
