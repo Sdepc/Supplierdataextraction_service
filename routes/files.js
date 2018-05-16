@@ -52,37 +52,31 @@ function savefilesjson(filename,Name) {
     });
 }
 
-
-router.put('/updatefilesjson', function (req, res, next) {
-    var input = req.body.files;
+//updatefilesjson('1525697142871Contract-A.pdf','failed');
+//deletefilesjson('1525754596908Contract-B.pdf');
+function updatefilesjson(UpdateFilename,Status) {
     var data = fs.readFileSync('./database/files.json', 'utf8');
     var json = JSON.parse(data);
     for (j in json) {
         for (y in json[j]) {
-            if (json[j][y].filename === input[0].filename) {
-                json[j][y].status = input[0].status
+            if (json[j][y].filename === UpdateFilename) {
+                json[j][y].status = Status
                 var total_data = json[j][y].status
-                //console.log(json)
-
             }
-
         }
     }
     fs.writeFileSync('./database/files.json', JSON.stringify(json), null);
-    res.end('{"msg": "success"}');
-});
+    console.log('updated');
+}
 
 
-router.post('/deletefilesjson', function (req, res, next) {
-    var removeUser = req.query.filename;
+function deletefilesjson(removeFileName) {
     var data = fs.readFileSync('./database/files.json');
     var json = JSON.parse(data);
-    console.log(json)
     var files = json.files;
-    console.log(files);
-    json.files = files.filter((file) => { return file.filename !== removeUser });
-    console.log(json.files);
+    json.files = files.filter((file) => { return file.filename !== removeFileName });
     fs.writeFileSync('./database/files.json', JSON.stringify(json, null));
-    res.end('{"msg": "success"}');
-});
+    console.log('deleted');
+}
+
 module.exports = router;
