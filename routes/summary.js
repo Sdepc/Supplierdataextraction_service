@@ -12,7 +12,7 @@ router.get('/contractnames', function (req, res, next) {
   fs.readdirSync(input_path).forEach(file => {
     obj.push(path.basename(file, '.txt'));
   });
-  res.write(JSON.stringify(obj, null, 3));
+  res.send(JSON.stringify(obj, null, 3));
 });
 
 
