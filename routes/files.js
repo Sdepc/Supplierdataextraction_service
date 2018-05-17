@@ -15,15 +15,14 @@ var storage = multer.diskStorage({
 });
 
 var upload = multer({ storage: storage });
-
+var files_data = [];
 
 router.post("/upload", upload.array("uploads[]", 12), function (req, res) {
-    
     var userName = req.query.username;
     console.log(userName);
     for (var i = 0; i < req.files.length; i++) {
         console.log(req.files[i].originalname)
-        savefilesjson(req.files[i].originalname,userName)
+        savefilesjson(req.files[i].originalname, userName)
     }
     res.send(req.files);
 });
@@ -35,8 +34,12 @@ router.get('/getfilescontent', function (req, res, next) {
     res.send(json);
 });
 
-function savefilesjson(filename,Name) {
-    var files_data = [];
+//define global var
+var global = {
+};
+
+
+function savefilesjson(filename, Name) {
     var input =
         [
             {
@@ -47,16 +50,29 @@ function savefilesjson(filename,Name) {
                 "status": "To be Processed"
             }
         ]
-    files_data = files_data.concat(input);
-    var json_data_file = { "files": files_data };
-    jsonfile.writeFile("./database/files.json", json_data_file, function (err) {
-        if (err) throw err;
-    });
+    if (global.hasOwnProperty(filename)) {
+        console.log("duplicate file ")
+    } else {
+        global[filename] = {
+            "id": 1,
+            "filename": filename,
+            "uploaded_by": Name,
+            "date_of_upload": Date.now(),
+            "status": "To be Processed"
+        };
+
+        files_data = files_data.concat(input);
+        var json_data_file = { "files": files_data };
+
+        jsonfile.writeFile("./database/files.json", json_data_file, function (err) {
+            if (err) throw err;
+        });
+    }
 }
 
 //updatefilesjson('1525697142871Contract-A.pdf','failed');
 //deletefilesjson('1525754596908Contract-B.pdf');
-function updatefilesjson(UpdateFilename,Status) {
+function updatefilesjson(UpdateFilename, Status) {
     var data = fs.readFileSync('./database/files.json', 'utf8');
     var json = JSON.parse(data);
     for (j in json) {
