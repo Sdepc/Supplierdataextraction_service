@@ -15,9 +15,10 @@ var storage = multer.diskStorage({
 });
 
 var upload = multer({ storage: storage });
-var files_data = [];
+
 
 router.post("/upload", upload.array("uploads[]", 12), function (req, res) {
+    
     var userName = req.query.username;
     console.log(userName);
     for (var i = 0; i < req.files.length; i++) {
@@ -35,6 +36,7 @@ router.get('/getfilescontent', function (req, res, next) {
 });
 
 function savefilesjson(filename,Name) {
+    var files_data = [];
     var input =
         [
             {
