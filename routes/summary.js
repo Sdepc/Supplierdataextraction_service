@@ -10,7 +10,7 @@ router.get('/contractnames', function (req, res, next) {
   res.setHeader('Content-Type', 'application/json');
   var obj = [];
   fs.readdirSync(input_path).forEach(file => {
-    obj.push(path.basename(file, '.txt'));
+    obj.push(path.basename(file, '.html'));
   });
   res.send(JSON.stringify(obj, null, 3));
 });
@@ -18,6 +18,7 @@ router.get('/contractnames', function (req, res, next) {
 
 /* GET Contract Content */
 router.get('/contractcontent', function (req, res) {
+
   var http = require('http');
   var fs = require('fs');
   var input_path = './output/';
@@ -27,9 +28,10 @@ router.get('/contractcontent', function (req, res) {
   var total_path = input_path + file_name;
 
   fs.readdir(input_path, function (err, items) {
-    fs.exists(c, function (exists) {
-      var file = fs.readFileSync(c, "utf8");
-      res.send(file);
+    fs.exists(total_path, function (exists) {
+      var file = fs.readFileSync(total_path, "utf8");
+      var data={"Data":file}
+      res.send(JSON.stringify(data));
     });
   });
 });
