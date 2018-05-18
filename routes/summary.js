@@ -7,7 +7,6 @@ var fs = require('fs');
 router.get('/contractnames', function (req, res, next) {
   var input_path = './output/';
   var fs = require('fs');
-  res.setHeader('Content-Type', 'application/json');
   var obj = [];
   fs.readdirSync(input_path).forEach(file => {
     obj.push(path.basename(file, '.html'));
@@ -30,7 +29,7 @@ router.get('/contractcontent', function (req, res) {
   fs.readdir(input_path, function (err, items) {
     fs.exists(total_path, function (exists) {
       var file = fs.readFileSync(total_path, "utf8");
-      var data={"Data":file}
+      var data = { "Data": file }
       res.send(JSON.stringify(data));
     });
   });
@@ -38,16 +37,16 @@ router.get('/contractcontent', function (req, res) {
 
 /* Post Purge*/
 router.post('/purge', function (req, res) {
+
   var outputpath = './output/';
-  var files = req.body;
-  var days = req.query.days;
-  if (days == true) {
+  var inputfiles = req.body;
+  if (req.query.days == "true") {
     //delete the 30 days older files
     olderdaysfiles(outputpath);
-    deleteFiles(outputpath, files);
+    deleteFiles(outputpath, inputfiles);
   }
   else {
-    deleteFiles(outputpath, files);
+    deleteFiles(outputpath, inputfiles);
   }
 
   function olderdaysfiles(dirPath) {
@@ -63,7 +62,7 @@ router.post('/purge', function (req, res) {
           livesUntil.setHours(livesUntil.getHours() - 720);
           if (stat.ctime < livesUntil) {
             fs.unlink(filePath, function (err) {
-              console.log("sucessfully deleted the older files");
+              res.send({ "Message": "Sucessfully deleted files" });
               if (err) return console.log(err);
             });
           }
@@ -77,8 +76,8 @@ router.post('/purge', function (req, res) {
       fs.unlink(dirname + files[i]['name'] + '.' + fileExt, function (err) {
         if (err) {
           console.error(err);
-          console.log('File has been Deleted');
         }
+        res.send({ "Message": "Sucessfully deleted files" });
       });
     }
   }
