@@ -39,8 +39,8 @@ router.get('/contractcontent', function (req, res) {
 /* Post Purge*/
 router.post('/purge', function (req, res) {
   var outputpath = './output/';
-  var files = req.body.files;
-  var days = req.body.days;
+  var files = req.body;
+  var days = req.query.days;
   if (days == true) {
     //delete the 30 days older files
     olderdaysfiles(outputpath);
@@ -72,9 +72,9 @@ router.post('/purge', function (req, res) {
     });
   }
   function deleteFiles(dirname, files, callback) {
-    fileExt = 'txt';
+    fileExt = 'html';
     for (var i = 0; i < files.length; i++) {
-      fs.unlink(dirname + files[i] + '.' + fileExt, function (err) {
+      fs.unlink(dirname + files[i]['name'] + '.' + fileExt, function (err) {
         if (err) {
           console.error(err);
           console.log('File has been Deleted');
