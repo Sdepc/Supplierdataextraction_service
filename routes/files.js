@@ -17,7 +17,7 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 var files_data = [];
 
-router.post("/upload", upload.array("uploads[]", 12), function (req, res) {
+router.post("/upload", upload.array("uploads[]", 20), function (req, res) {
     var userName = req.query.username;
     console.log(userName);
     for (var i = 0; i < req.files.length; i++) {
