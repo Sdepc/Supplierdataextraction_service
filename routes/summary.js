@@ -2,25 +2,23 @@ var express = require('express');
 var router = express.Router();
 var path = require('path');
 var fs = require('fs');
+var http = require('http');
 
 /* GET Contract Names*/
 router.get('/contractnames', function (req, res, next) {
   var input_path = './output/';
-  var fs = require('fs');
   var obj = [];
   fs.readdirSync(input_path).forEach(file => {
     obj.push(path.basename(file, '.html'));
   });
-  res.send(JSON.stringify(obj, null, 3));
+  res.send(JSON.stringify(obj));
 });
 
 
 /* GET Contract Content */
 router.get('/contractcontent', function (req, res) {
-
-  var http = require('http');
-  var fs = require('fs');
   var input_path = './output/';
+
   var input = req.query.filename;
   var fileExtension = 'html';
   var file_name = input + '.' + fileExtension;
@@ -62,12 +60,12 @@ router.post('/purge', function (req, res) {
           livesUntil.setHours(livesUntil.getHours() - 720);
           if (stat.ctime < livesUntil) {
             fs.unlink(filePath, function (err) {
-              res.send({ "Message": "Sucessfully deleted files" });
               if (err) return console.log(err);
             });
           }
         });
       });
+      res.send({ "Message": "Sucessfully deleted files" });
     });
   }
   function deleteFiles(dirname, files, callback) {
@@ -77,9 +75,9 @@ router.post('/purge', function (req, res) {
         if (err) {
           console.error(err);
         }
-        res.send({ "Message": "Sucessfully deleted files" });
       });
     }
+    res.send({ "Message": "Sucessfully deleted files" });
   }
 });
 
