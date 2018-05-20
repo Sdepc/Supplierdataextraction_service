@@ -1,6 +1,6 @@
 #define global parameters
 
-input_ = '/inputs/'
+input_ = '/input_processing/'
 temp_txt = '/temp_txt/'
 temp_img = '/temp_img/'
 output_  = '/output/'
