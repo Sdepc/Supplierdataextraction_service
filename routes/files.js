@@ -37,7 +37,7 @@ router.get('/getfilescontent', function (req, res, next) {
 //define global var
 var global = {
 };
-
+var files_data ;
 
 function savefilesjson(filename, Name) {
     var input =
@@ -50,6 +50,7 @@ function savefilesjson(filename, Name) {
                 "status": "To be Processed"
             }
         ]
+
     if (global.hasOwnProperty(filename)) {
         console.log("duplicate file ")
     } else {
@@ -60,15 +61,23 @@ function savefilesjson(filename, Name) {
             "date_of_upload": Date.now(),
             "status": "To be Processed"
         };
-
+        
         files_data = files_data.concat(input);
         var json_data_file = { "files": files_data };
 
-        jsonfile.writeFile("./database/files.json", json_data_file, function (err) {
+        jsonfile.writeFileSync("./database/files.json",json_data_file, function (err) {
             if (err) throw err;
+        /*files_data = files_data.concat(input);
+        var json_texts = files_data.toString().split("\n");
+        var json_data_file = { "files": json_texts };
+        
+        jsonfile.writeFile("./database/files.json",JSON.parse(JSON.stringify(json_data_file)), function (err) {
+            if (err) throw err;*/
         });
     }
-}
+    }
+
+
 
 //updatefilesjson('1525697142871Contract-A.pdf','failed');
 //deletefilesjson('1525754596908Contract-B.pdf');
