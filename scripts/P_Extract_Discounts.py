@@ -28,6 +28,9 @@ if not os.path.exists('processed'):
 if not os.path.exists('output'):
     print("not found and creating the output folder")
     os.makedirs('output')
+if not os.path.exists('input_processing'):
+    print("not found and creating the output folder")
+    os.makedirs('input_processing')
 
 
 # Working directory, directory where program is located
@@ -41,6 +44,7 @@ temp_txt = work_dir + P_globalvars.temp_txt
 temp_img = work_dir + P_globalvars.temp_img
 output_  = work_dir + P_globalvars.output_
 process_ = work_dir + P_globalvars.process_
+
 #change directory
 os.chdir(work_dir)
 
@@ -64,7 +68,7 @@ for fname in list_of_files:
 
 #source = 'C:\\Users\\sk00507400\\Desktop\\Extract discount\\input\\'
 #dest1 = 'C:\\Users\\sk00507400\\Desktop\\Extract discount\\processed\\'
-source = work_dir + P_globalvars.inputs_
+source = work_dir + P_globalvars.input_
 dest1 = work_dir + P_globalvars.process_
 files = os.listdir(source)
 for f in files:
