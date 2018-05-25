@@ -38,18 +38,18 @@ function moveFile(files) {
             var dest = path.resolve(dir2, f);
             fs.rename(file_name, dest, (err) => {
                 if (err) {
-                    throw err;
+                   // throw err;
                 }
                 else {
-                    //console.log('Successfully moved');
+                    console.log('Successfully moved');
                     var testFolder = './input_processing/';
-          fs.readdir(testFolder, (err, files) => {
-            files.forEach(file => {
-              console.log(file);
-              updatefilesjson(file,"In_process");
-            });
-          });
-               }
+                    fs.readdir(testFolder, (err, files) => {
+                        files.forEach(file => {
+                            console.log(file);
+                            updatefilesjson(file, "In_process");
+                        });
+                    });
+                }
             });
         }
         data(total_path, dir2);
@@ -63,58 +63,71 @@ function processData() {
     var pyshell = new PythonShell(myPythonScriptPath);
     pyshell.on('message', function (message) {
         console.log(message);
-        
+
     });
     pyshell.end(function (err) {
-        
+
         if (err) {
-            var dir2 = './inputs';
-
             var testFolder = './input_processing/';
-          fs.readdir(testFolder, (err, files) => {
-            files.forEach(file => {
-              console.log(file);
-              updatefilesjson(file,"process_failed");
-              var total_path = testFolder + file;
-              var data = (file, dir2) => {
-                //include the fs, path modules
-    
-                //gets file name and adds it to dir2
-                var f = path.basename(file);
-                var dest = path.resolve(dir2, f);
-                fs.rename(file, dest, (err) => {
-                    if (err) {
-                        throw err;
-                    }
-                    else {
-                        console.log('Successfully moved');
-                
-            }
-            data(total_path, dir2);
-        });
-    }
-      
+            fs.readdir(testFolder, (err, files) => {
+                files.forEach(file => {
+                    console.log(file);
+                    updatefilesjson(file, "process_failed");
+                });
             });
-          })
-            }
-        else{
-            var testFolder1 = './processed/';
-          fs.readdir(testFolder1, (err, files) => {
-            files.forEach(file => {
-              console.log(file);
-              deletefilesjson(file); 
-              //res.setHeader('Content-Type', 'plain/text');
-              //res.send("processed");
-
-            });
-          }) 
-       
+            backtrack();
         }
-});
+        else {
+            var testFolder1 = './processed/';
+            fs.readdir(testFolder1, (err, files) => {
+                files.forEach(file => {
+                    console.log(file);
+                    deletefilesjson(file);
+                    
+
+                });
+            })
+
+        }
+    });
 }
 
 
-        
+function backtrack() {
+    var dirpath = './input_processing/';
+    var dir2 = './inputs/';
+   var myfiles = [];
+   var arrayOfFiles = fs.readdirSync('./input_processing/');
+    arrayOfFiles.forEach(function (file) {
+        myfiles.push(file);
+        console.log(myfiles);
+        myfiles.forEach(function (file) {
+            console.log(file);
+            var file_name = file;
+            console.log(file_name);
+            var total_path = dirpath + file_name;
+            console.log(total_path);
+            var f = path.basename(file_name);
+            var dest = path.resolve(dir2, f);
+            fs.rename('./input_processing/' + file_name, dest, (err) => {
+                if (err) {
+                    //throw err;
+                }
+                else {
+                    console.log('Successfully moved');
+
+                }
+
+
+
+            });
+        });
+    });
+
+
+}
+
+
 
 function updatefilesjson(UpdateFilename, Status, callback) {
     var data = fs.readFileSync('./database/files.json', 'utf8');
@@ -129,8 +142,8 @@ function updatefilesjson(UpdateFilename, Status, callback) {
         }
     }
     fs.writeFileSync('./database/files.json', JSON.stringify(json), null);
-    
-        
+
+
 }
 
 
@@ -142,10 +155,10 @@ function deletefilesjson(removeFileName) {
     var files = json.files;
     json.files = files.filter((file) => { return file.filename !== removeFileName });
     fs.writeFileSync('./database/files.json', JSON.stringify(json, null));
-   
+    console.log("deleted");
 }
 
-    
+
 
 
 
@@ -154,10 +167,10 @@ router.post('/pythonscripts', function (req, res, next) {
 
     moveFile(req.body.files);
     processData();
+    res.end("{message:success}");
+
 
 });
-
-
 
 
 

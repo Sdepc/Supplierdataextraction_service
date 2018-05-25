@@ -6,7 +6,7 @@ def recurse(page, xObject,filename):
     from os import path
     from PIL import Image
     import pytesseract
-    import P_params
+    #import P_params
 
 ##    pytesseract.tesseract_cmd = 'C://Program Files (x86)//Tesseract-OCR//tesseract'
     pytesseract.tesseract_cmd = P_params.tesseract_path()

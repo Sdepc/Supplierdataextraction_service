@@ -50,7 +50,7 @@ def Read_corpus(path_c,fname_c,fo1):
     import fileinput
     nlp = spacy.load('en_core_web_sm')
     from nltk.corpus.reader.plaintext import PlaintextCorpusReader
-    
+
     pcorpus = PlaintextCorpusReader(path_c, fname_c,encoding="utf")
 
     #HTML Tags to file

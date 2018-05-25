@@ -16,22 +16,22 @@ import os
 import shutil
 import pytesseract
 if not os.path.exists('inputs'):
-    print("not found and creating the input folder")
+    print("not found and creating the inputs folder")
     os.makedirs('inputs')
 if not os.path.exists('temp_txt'):
-    print("not found and creating the temp folder")
+    print("not found and creating the temp_txt folder")
     os.makedirs('temp_txt')
 if not os.path.exists('temp_img'):
-    print("not found and creating the processed folder")
+    print("not found and creating the temp_img folder")
     os.makedirs('temp_img')
 if not os.path.exists('processed'):
-    print("not found and creating the output folder")
+    print("not found and creating the processed folder")
     os.makedirs('processed')
 if not os.path.exists('output'):
     print("not found and creating the output folder")
     os.makedirs('output')
 if not os.path.exists('input_processing'):
-    print("not found and creating the output folder")
+    print("not found and creating the input_processing folder")
     os.makedirs('input_processing')
 
 
