@@ -56,41 +56,6 @@ function moveFile(files) {
     });
 }
 
-function processData() {
-
-    var myPythonScriptPath = './scripts/P_Extract_Discounts.py';
-    console.log(myPythonScriptPath);
-    var pyshell = new PythonShell(myPythonScriptPath);
-    pyshell.on('message', function (message) {
-        console.log(message);
-
-    });
-    pyshell.end(function (err) {
-
-        if (err) {
-            var testFolder = './input_processing/';
-            fs.readdir(testFolder, (err, files) => {
-                files.forEach(file => {
-                    console.log(file);
-                    updatefilesjson(file, "process_failed");
-                });
-            });
-            backtrack();
-        }
-        else {
-            var testFolder1 = './processed/';
-            fs.readdir(testFolder1, (err, files) => {
-                files.forEach(file => {
-                    console.log(file);
-                    deletefilesjson(file);
-                    
-
-                });
-            })
-
-        }
-    });
-}
 
 
 function backtrack() {
@@ -167,8 +132,53 @@ router.post('/pythonscripts', function (req, res, next) {
 
     moveFile(req.body.files);
     processData();
-    res.end("{message:success}");
 
+
+
+
+
+
+
+    function processData() {
+
+        var myPythonScriptPath = './scripts/P_Extract_Discounts.py';
+        console.log(myPythonScriptPath);
+        var pyshell = new PythonShell(myPythonScriptPath);
+        pyshell.on('message', function (message) {
+            console.log(message);
+    
+        });
+        pyshell.end(function (err) {
+    
+            if (err) {
+                var testFolder = './input_processing/';
+                fs.readdir(testFolder, (err, files) => {
+                    files.forEach(file => {
+                        console.log(file);
+                        updatefilesjson(file, "process_failed");
+                    });
+                });
+                backtrack();
+            }
+            else {
+                var testFolder1 = './processed/';
+                fs.readdir(testFolder1, (err, files) => {
+                    files.forEach(file => {
+                        console.log(file);
+                        deletefilesjson(file);
+                        
+    
+                    });
+                });
+    
+            }
+            res.send("{message:success}");
+    
+            
+        });
+    }
+    
+   
 
 });
 
