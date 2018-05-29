@@ -121,15 +121,9 @@ function updatefilesjson(UpdateFilename, Status, callback) {
 }
 
 
-function deletefilesjson(removeFileName) {
-    var data = fs.readFileSync('./database/files.json');
-    var json = JSON.parse(data);
-    var files = json.files;
-    json.files = files.filter((file) => { return file.filename !== removeFileName });
-    fs.writeFileSync('./database/files.json', JSON.stringify(json, null));
-    console.log("deleted");
-   
-}
+
+
+
 
 
 
@@ -142,7 +136,6 @@ router.post('/pythonscripts', function (req, res, next) {
 
     moveFile(req.body.files);
     processData();
-
 
 
 
@@ -180,10 +173,25 @@ router.post('/pythonscripts', function (req, res, next) {
     
             }
            
-            res.end("{message:success}");
+            
             
         });
     }
+    
+
+
+
+    function deletefilesjson(removeFileName) {
+        var data = fs.readFileSync('./database/files.json');
+        var json = JSON.parse(data);
+        var files = json.files;
+        json.files = files.filter((file) => { return file.filename !== removeFileName });
+        fs.writeFileSync('./database/files.json', JSON.stringify(json, null));
+        console.log("deleted");
+        res.end("{message:success}");
+    }
+    
+    
     
 
 
