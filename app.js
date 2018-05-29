@@ -11,6 +11,8 @@ var summaryRouter = require('./routes/summary');
 var processedRouter = require('./routes/processed');
 
 var app = express();
+//var timeout = express.timeout // express v3 and below
+var timeout = require('connect-timeout'); //express v4
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
