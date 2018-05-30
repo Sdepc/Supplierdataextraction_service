@@ -17,7 +17,7 @@ app.use(express.static(__dirname + '/js'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-
+router.post('/pythonscripts', function (req, res, next) {
 
 function moveFile(files) {
     var dirpath = './inputs/';
@@ -56,6 +56,42 @@ function moveFile(files) {
     });
 }
 
+function processData() {
+
+    var myPythonScriptPath = './scripts/P_Extract_Discounts.py';
+    console.log(myPythonScriptPath);
+    var pyshell = new PythonShell(myPythonScriptPath);
+    pyshell.on('message', function (message) {
+        console.log(message);
+
+    });
+    pyshell.end(function (err) {
+
+        if (err) {
+            var testFolder = './input_processing/';
+            fs.readdir(testFolder, (err, files) => {
+                files.forEach(file => {
+                    console.log(file);
+                    updatefilesjson(file, "process_failed");
+                });
+            });
+            backtrack();
+        }
+        else {
+            var testFolder1 = './processed/';
+            fs.readdir(testFolder1, (err, files) => {
+                files.forEach(file => {
+                    console.log(file);
+                    updatefilesjson(file, "processed");
+                    deletefilesjson(file);
+                    
+
+                });
+            })
+
+        }
+    });
+}
 
 
 function backtrack() {
@@ -94,15 +130,6 @@ function backtrack() {
 
 
 
-
-
-
-
-
-
-
-
-
 function updatefilesjson(UpdateFilename, Status, callback) {
     var data = fs.readFileSync('./database/files.json', 'utf8');
     var json = JSON.parse(data);
@@ -123,6 +150,15 @@ function updatefilesjson(UpdateFilename, Status, callback) {
 
 
 
+function deletefilesjson(removeFileName) {
+    var data = fs.readFileSync('./database/files.json');
+    var json = JSON.parse(data);
+    var files = json.files;
+    json.files = files.filter((file) => { return file.filename !== removeFileName });
+    fs.writeFileSync('./database/files.json', JSON.stringify(json, null));
+    console.log("deleted");
+    res.end("{message:success}");
+}
 
 
 
@@ -130,78 +166,11 @@ function updatefilesjson(UpdateFilename, Status, callback) {
 
 
 
-
-
-router.post('/pythonscripts', function (req, res, next) {
 
     moveFile(req.body.files);
     processData();
-
-
-
-    function processData() {
-
-        var myPythonScriptPath = './scripts/P_Extract_Discounts.py';
-        console.log(myPythonScriptPath);
-        var pyshell = new PythonShell(myPythonScriptPath);
-        pyshell.on('message', function (message) {
-            console.log(message);
-    
-        });
-        pyshell.end(function (err) {
-    
-            if (err) {
-                var testFolder = './input_processing/';
-                fs.readdir(testFolder, (err, files) => {
-                    files.forEach(file => {
-                        console.log(file);
-                        updatefilesjson(file, "process_failed");
-                    });
-                });
-                backtrack();
-            }
-            else {
-                var testFolder1 = './processed/';
-                fs.readdir(testFolder1, (err, files) => {
-                    files.forEach(file => {
-                        console.log(file);
-                        deletefilesjson(file);
-                        
-    
-                    });
-                });
-    
-            }
-           
-            
-            
-        });
-    }
     
 
-
-
-    function deletefilesjson(removeFileName) {
-        var data = fs.readFileSync('./database/files.json');
-        var json = JSON.parse(data);
-        var files = json.files;
-        json.files = files.filter((file) => { return file.filename !== removeFileName });
-        fs.writeFileSync('./database/files.json', JSON.stringify(json, null));
-        console.log("deleted");
-        res.end("{message:success}");
-    }
-    
-    
-    
-
-
-
-
-
-
-
-
-    
 
 });
 
