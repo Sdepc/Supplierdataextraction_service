@@ -1,3 +1,4 @@
+/*import modules*/
 var express = require('express');
 var router = express.Router();
 var path = require('path');
@@ -18,13 +19,11 @@ router.get('/contractnames', function (req, res, next) {
 /* GET Contract Content */
 router.get('/contractcontent', function (req, res) {
   var input_path = './output/';
-
   var input = req.query.filename;
   var fileExtension = 'html';
   var file_name = input + '.' + fileExtension;
   var total_path = input_path + file_name;
-
-  fs.readdir(input_path, function (err, items) {
+fs.readdir(input_path, function (err, items) {
     fs.exists(total_path, function (exists) {
       var file = fs.readFileSync(total_path, "utf8");
       var data = { "Data": file }
@@ -35,8 +34,7 @@ router.get('/contractcontent', function (req, res) {
 
 /* Post Purge*/
 router.post('/purge', function (req, res) {
-
-  var outputpath = './output/';
+var outputpath = './output/';
   var inputfiles = req.body;
   if (req.query.days == "true") {
     //delete the 30 days older files
@@ -46,8 +44,7 @@ router.post('/purge', function (req, res) {
   else {
     deleteFiles(outputpath, inputfiles);
   }
-
-  function olderdaysfiles(dirPath) {
+function olderdaysfiles(dirPath) {
     // var dirPath =  './output/';
     fs.readdir(dirPath, function (err, files) {
       if (err) return console.log(err);
@@ -73,7 +70,7 @@ router.post('/purge', function (req, res) {
     for (var i = 0; i < files.length; i++) {
       fs.unlink(dirname + files[i]['name'] + '.' + fileExt, function (err) {
         if (err) {
-          console.error(err);
+          //console.error(err);
         }
       });
     }
