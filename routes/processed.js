@@ -19,14 +19,14 @@ router.post('/pythonscripts', function (req, res, next) {
     function moveFile(files) {
         var dirpath = './inputs/';
         var dir2 = './input_processing';
-        //console.log(files);
+        console.log(files);
         files.forEach(function (file) {
             //console.log(file);
-            var fileExtension = 'pdf';
-            var file_name = file + '.' + fileExtension;
-            //console.log(file_name);
+            //var fileExtension = 'pdf';
+            var file_name = file.name;
+            console.log(file_name);
             var total_path = dirpath + file_name;
-            //console.log(total_path);
+            console.log(total_path);
             var data = (file_name, dir2) => {
                 //gets file name and adds it to dir2
                 var f = path.basename(file_name);
@@ -142,7 +142,7 @@ router.post('/pythonscripts', function (req, res, next) {
         res.end("{message:success}");
     }
 
-    moveFile(req.body.files);//callback of moveFile function
+    moveFile(req.body);//callback of moveFile function
     processData();//callback of processData function
 });
 
