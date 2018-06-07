@@ -139,7 +139,8 @@ router.post('/pythonscripts', function (req, res, next) {
         json.files = files.filter((file) => { return file.filename !== removeFileName });
         fs.writeFileSync('./database/files.json', JSON.stringify(json, null));
         console.log("deleted");
-        res.end("{message:success}");
+       var message={"Message":"Success"};
+        res.send(message);
     }
 
     moveFile(req.body);//callback of moveFile function
