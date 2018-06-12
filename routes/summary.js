@@ -23,10 +23,12 @@ router.get('/contractcontent', function (req, res) {
   var fileExtension = 'html';
   var file_name = input + '.' + fileExtension;
   var total_path = input_path + file_name;
-fs.readdir(input_path, function (err, items) {
+  fs.readdir(input_path, function (err, items) {
     fs.exists(total_path, function (exists) {
       var file = fs.readFileSync(total_path, "utf8");
-      var data = { "Data": file }
+      var data = {
+        "Data": file
+      }
       res.send(JSON.stringify(data));
     });
   });
@@ -34,22 +36,29 @@ fs.readdir(input_path, function (err, items) {
 
 /* Post Purge*/
 router.post('/purge', function (req, res) {
-var outputpath = './output/';
-  var inputfiles = req.body;
+  var outputpath = './output/';
+  var outputpath1 = './processed/';
+  var inputfiles = req.body.Files;
+  console.log(inputfiles);
   if (req.query.days == "true") {
+    console.log(hi);
     //delete the 30 days older files
     olderdaysfiles(outputpath);
     deleteFiles(outputpath, inputfiles);
-  }
-  else {
+    deleteProcessed(outputpath1, inputfiles);
+  } else {
+    console.log("hi");
     deleteFiles(outputpath, inputfiles);
+    deleteProcessed(outputpath1, inputfiles);
   }
-function olderdaysfiles(dirPath) {
+
+  function olderdaysfiles(dirPath) {
     // var dirPath =  './output/';
     fs.readdir(dirPath, function (err, files) {
       if (err) return console.log(err);
       files.forEach(function (file) {
         var filePath = dirPath + file;
+        console.log(filePath)
         fs.stat(filePath, function (err, stat) {
           if (err) return console.log(err);
           var livesUntil = new Date();
@@ -62,19 +71,36 @@ function olderdaysfiles(dirPath) {
           }
         });
       });
-      res.send({ "Message": "Sucessfully deleted files" });
+      res.send({
+        "Message": "Sucessfully deleted files"
+      });
     });
   }
+
   function deleteFiles(dirname, files, callback) {
     fileExt = 'html';
     for (var i = 0; i < files.length; i++) {
-      fs.unlink(dirname + files[i]['name'] + '.' + fileExt, function (err) {
+      fs.unlink(dirname + files[i] + '.' + fileExt, function (err) {
+        if (err) {
+          console.error(err);
+        }
+      });
+    }
+    //res.send({ "Message": "Sucessfully deleted files" });
+  }
+
+  function deleteProcessed(dirname, files, callback) {
+    fileExt = 'pdf';
+    for (var i = 0; i < files.length; i++) {
+      fs.unlink(dirname + files[i] + '.' + fileExt, function (err) {
         if (err) {
           //console.error(err);
         }
       });
     }
-    res.send({ "Message": "Sucessfully deleted files" });
+    res.send({
+      "Message": "Sucessfully deleted files"
+    });
   }
 });
 
