@@ -37,19 +37,13 @@ router.get('/contractcontent', function (req, res) {
 /* Post Purge*/
 router.post('/purge', function (req, res) {
   var outputpath = './output/';
-  var outputpath1 = './processed/';
-  var inputfiles = req.body.Files;
-  console.log(inputfiles);
+  var inputfiles = req.body;
   if (req.query.days == "true") {
-    console.log(hi);
     //delete the 30 days older files
     olderdaysfiles(outputpath);
     deleteFiles(outputpath, inputfiles);
-    deleteProcessed(outputpath1, inputfiles);
   } else {
-    console.log("hi");
     deleteFiles(outputpath, inputfiles);
-    deleteProcessed(outputpath1, inputfiles);
   }
 
   function olderdaysfiles(dirPath) {
@@ -58,7 +52,6 @@ router.post('/purge', function (req, res) {
       if (err) return console.log(err);
       files.forEach(function (file) {
         var filePath = dirPath + file;
-        console.log(filePath)
         fs.stat(filePath, function (err, stat) {
           if (err) return console.log(err);
           var livesUntil = new Date();
@@ -79,20 +72,16 @@ router.post('/purge', function (req, res) {
 
   function deleteFiles(dirname, files, callback) {
     fileExt = 'html';
+    fileExt1 = 'pdf';
+    dirname1 = './processed/';
     for (var i = 0; i < files.length; i++) {
-      fs.unlink(dirname + files[i] + '.' + fileExt, function (err) {
+      fs.unlink(dirname + files[i]['name'] + '.' + fileExt, function (err) {
         if (err) {
-          console.error(err);
+          //console.error(err);
         }
       });
-    }
-    //res.send({ "Message": "Sucessfully deleted files" });
-  }
-
-  function deleteProcessed(dirname, files, callback) {
-    fileExt = 'pdf';
-    for (var i = 0; i < files.length; i++) {
-      fs.unlink(dirname + files[i] + '.' + fileExt, function (err) {
+      console.log(dirname1 + files[i]['name'] + '.' + fileExt1);
+      fs.unlink(dirname1 + files[i]['name'] + '.' + fileExt1, function (err) {
         if (err) {
           //console.error(err);
         }
@@ -105,3 +94,6 @@ router.post('/purge', function (req, res) {
 });
 
 module.exports = router;
+
+
+

@@ -8,8 +8,12 @@ var bodyParser = require("body-parser");
 var PythonShell = require('python-shell');
 var fs = require('fs');
 var path = require('path');
+var database = require('./dbconnection');
+
 app.use(express.static(__dirname + '/js'));
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
 app.use(bodyParser.json());
 
 /*POST to run Python scripts*/
@@ -32,21 +36,19 @@ router.post('/pythonscripts', function (req, res, next) {
                 var f = path.basename(file_name);
                 var dest = path.resolve(dir2, f);
                 fs.rename(file_name, dest, (err) => {
-                    if (err) {
-                    }
-                    else {
+                    if (err) {} else {
                         console.log('Successfully moved');
                         var testFolder = './input_processing/';
                         fs.readdir(testFolder, (err, files) => {
                             files.forEach(file => {
                                 //console.log(file);
-                                updatefilesjson(file, "In_process");//callback of updatefilesjson function
+                                updatefilesjson(file, "In_process"); //callback of updatefilesjson function
                             });
                         });
                     }
                 });
             }
-            data(total_path, dir2);//callback of data function
+            data(total_path, dir2); //callback of data function
         });
     }
 
@@ -64,25 +66,24 @@ router.post('/pythonscripts', function (req, res, next) {
                 fs.readdir(testFolder, (err, files) => {
                     files.forEach(file => {
                         console.log(file);
-                        updatefilesjson(file, "process_failed");//callback of updatefilesjson function
+                        updatefilesjson(file, "process_failed"); //callback of updatefilesjson function
                     });
                 });
-                backtrack();//callback of bactrack function
-            }
-            else {
+                backtrack(); //callback of bactrack function
+            } else {
                 var testFolder1 = './processed/';
                 fs.readdir(testFolder1, (err, files) => {
                     files.forEach(file => {
                         console.log(file);
-                        //updatefilesjson(file, "processed");//callback of updatefilesjson function
-                        deletefilesjson(file);//callback of deletefilesjson function
+                        //updatefilesjson(file, "processed"); //callback of updatefilesjson function
+                        deletefilesjson(file); //callback of deletefilesjson function
 
 
                     });
                 })
 
             }
-           
+
         });
     }
 
@@ -106,8 +107,7 @@ router.post('/pythonscripts', function (req, res, next) {
                 fs.rename('./input_processing/' + file_name, dest, (err) => {
                     if (err) {
                         //throw err;
-                    }
-                    else {
+                    } else {
                         console.log('Successfully moved');
 
                     }
@@ -118,33 +118,37 @@ router.post('/pythonscripts', function (req, res, next) {
 
     /*update json file*/
     function updatefilesjson(UpdateFilename, Status, callback) {
-        var data = fs.readFileSync('./database/files.json', 'utf8');
-        var json = JSON.parse(data);
-        for (j in json) {
-            for (y in json[j]) {
-                if (json[j][y].filename === UpdateFilename) {
-                    json[j][y].status = Status
-                    var total_data = json[j][y].status
-                }
+        let data = [Status, UpdateFilename];
+        console.log(data);
+        let sql = `UPDATE FILES SET status = ? WHERE filename = ?`;
+        database.run(sql, data, function (err) {
+            if (err) {
+                console.error(err.message);
+            } else {
+                console.log(`Row(s) updated: ${this.changes}`);
             }
-        }
-        fs.writeFileSync('./database/files.json', JSON.stringify(json), null);
+        });
     }
 
     /*Delete json file after processing*/
     function deletefilesjson(removeFileName) {
-        var data = fs.readFileSync('./database/files.json');
-        var json = JSON.parse(data);
-        var files = json.files;
-        json.files = files.filter((file) => { return file.filename !== removeFileName });
-        fs.writeFileSync('./database/files.json', JSON.stringify(json, null));
-        console.log("deleted");
-       var message={"Message":"Success"};
+        let filenamedata = removeFileName;
+        // delete a row based on id
+        database.run(`DELETE FROM FILES WHERE filename=?`, filenamedata, function (err) {
+            if (err) {
+                return console.error(err.message);
+            }
+            console.log(`Row(s) deleted ${this.changes}`);
+        });
+
+        var message = {
+            "Message": "Success"
+        };
         res.send(message);
     }
 
-    moveFile(req.body);//callback of moveFile function
-    processData();//callback of processData function
+    moveFile(req.body); //callback of moveFile function
+    processData(); //callback of processData function
 });
 
 module.exports = router;
