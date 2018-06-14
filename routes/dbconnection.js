@@ -8,6 +8,8 @@ let db = new sqlite3.Database('./database/Supplier.db', sqlite3.OPEN_READWRITE, 
 });
 //db.run('DROP TABLE FILES')
 //db.run('CREATE TABLE FILES(filename TEXT,uploaded_by  TEXT,status TEXT,date_of_upload TEXT,PRIMARY KEY (filename))');
+//db.run('CREATE TABLE LOG(filename TEXT,status TEXT,error_message TEXT)');
+
 
 //db.run('DELETE FROM FILES')
 
