@@ -4,6 +4,7 @@ var router = express.Router();
 var path = require('path');
 var fs = require('fs');
 var http = require('http');
+const FileOlderThan = require('file-older-than')
 
 /* GET Contract Names*/
 router.get('/contractnames', function (req, res, next) {
@@ -37,13 +38,19 @@ router.get('/contractcontent', function (req, res) {
 /* Post Purge*/
 router.post('/purge', function (req, res) {
   var outputpath = './output/';
+  var outputpath1 = './processed/';
   var inputfiles = req.body;
+  console.log(inputfiles);
   if (req.query.days == "true") {
+    //console.log("hello");
     //delete the 30 days older files
     olderdaysfiles(outputpath);
     deleteFiles(outputpath, inputfiles);
+    deleteProcessed(outputpath1, inputfiles);
   } else {
+    //console.log("hi");
     deleteFiles(outputpath, inputfiles);
+    deleteProcessed(outputpath1, inputfiles);
   }
 
   function olderdaysfiles(dirPath) {
@@ -51,49 +58,71 @@ router.post('/purge', function (req, res) {
     fs.readdir(dirPath, function (err, files) {
       if (err) return console.log(err);
       files.forEach(function (file) {
+        //var file_name = file.name;
         var filePath = dirPath + file;
+        console.log(filePath)
         fs.stat(filePath, function (err, stat) {
           if (err) return console.log(err);
-          var livesUntil = new Date();
+           var livesUntil = new Date;
+           var endTime = new Date(stat.ctime).getTime()-720;
+           //var endTime = livesUntil-720;
+           //console.log(livesUntil);
+           //console.log(endTime);
           //setting hours i.e.(24*30) for purging 30 days older files
-          livesUntil.setHours(livesUntil.getHours() - 720);
-          if (stat.ctime < livesUntil) {
+          livesUntil.setHours(stat.ctime.getHours() - 720);
+          //console.log(stat.ctime);
+          //console.log(stat.atime);
+          if (stat.ctime < livesUntil) { 
+          //if (FileOlderThan(file, '720h')){
             fs.unlink(filePath, function (err) {
               if (err) return console.log(err);
             });
+            var filename = path.basename(dirPath + file, '.html');
+              //console.log(filename);
+              fileExt = "pdf"
+              process_file = outputpath1 + filename + '.' + fileExt;
+              fs.unlink(process_file, function (err) {
+                if (err) {
+                  // console.error(err);
+                }
+                //if (err) return console.log(err);
+              });
           }
         });
       });
-      res.send({
-        "Message": "Sucessfully deleted files"
-      });
+      //res.send({
+        //"Message": "Sucessfully deleted files"
+      //});
     });
   }
 
   function deleteFiles(dirname, files, callback) {
     fileExt = 'html';
-    fileExt1 = 'pdf';
-    dirname1 = './processed/';
     for (var i = 0; i < files.length; i++) {
-      fs.unlink(dirname + files[i]['name'] + '.' + fileExt, function (err) {
+      fs.unlink(dirname + files[i].name+ '.' + fileExt, function (err) {
         if (err) {
-          //console.error(err);
-        }
-      });
-      console.log(dirname1 + files[i]['name'] + '.' + fileExt1);
-      fs.unlink(dirname1 + files[i]['name'] + '.' + fileExt1, function (err) {
-        if (err) {
-          //console.error(err);
+         // console.error(err);
         }
       });
     }
-    res.send({
-      "Message": "Sucessfully deleted files"
-    });
+    //res.send({ "Message": "Sucessfully deleted files" });
   }
+
+  function deleteProcessed(dirname, files, callback) {
+    fileExt = 'pdf';
+    for (var i = 0; i < files.length; i++) {
+      fs.unlink(dirname + files[i].name + '.' + fileExt, function (err) {
+        if (err) {
+          //console.error(err);
+        }
+      });
+      
+    }
+     
+  }
+   res.send({
+    "Message": "Sucessfully deleted files"
+  }); 
 });
 
 module.exports = router;
-
-
-

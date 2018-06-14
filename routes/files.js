@@ -26,14 +26,9 @@ router.post("/upload", upload.array("uploads[]", 20), function (req, res) {
     var userName = req.query.username;
     //console.log(userName);
     for (var i = 0; i < req.files.length; i++) {
-        //console.log(req.files[i].originalname)
-        //savefilesjson(req.files[i].originalname, userName)
-        
         filename = req.files[i].originalname;
         database.run(`INSERT INTO FILES(filename,uploaded_by,status,date_of_upload) VALUES(?,?,?,?)`, [req.files[i].originalname, userName, 'To be Processed', Date.now()], function (err) {
             if (err) {
-                console.log(err.message);
-                console.log(filename)
                 Message.push({
                     "Error_File_Name": filename
                 })

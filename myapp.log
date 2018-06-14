@@ -1,1 +1,3 @@
-2018-06-13 02:36:31,471 ERROR __main__ Destination path './processed\Contract-1.pdf' already exists
+2018-06-14 00:22:56,346 DEBUG PIL.PngImagePlugin STREAM b'IHDR' 16 13
+2018-06-14 00:22:56,347 DEBUG PIL.PngImagePlugin STREAM b'IDAT' 41 17809
+2018-06-14 00:22:56,600 ERROR __main__ [WinError 2] The system cannot find the file specified
