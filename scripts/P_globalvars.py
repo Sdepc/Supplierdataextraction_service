@@ -1,11 +1,17 @@
 #define global parameters
 
-input_ = '/input_processing/'
+
+# process this JSON data and do something with it
+
+
+input_ = '/inputs/'
 temp_txt = '/temp_txt/'
 temp_img = '/temp_img/'
 output_  = '/output/'
 process_ = '/processed'
 path_ = 'C://Program Files (x86)//Tesseract-OCR//tesseract'
+
+
 
 tag_ = r'(Party name|party address|Phone Number|company name|Contract No)'
 dis_ = r'\b(Discount|reduc)'

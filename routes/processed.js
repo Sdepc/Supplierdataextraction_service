@@ -9,6 +9,8 @@ var PythonShell = require('python-shell');
 var fs = require('fs');
 var path = require('path');
 var database = require('./dbconnection');
+var bbPromise = require('bluebird');
+var spawn = require('child_process').spawn;  
 
 app.use(express.static(__dirname + '/js'));
 app.use(bodyParser.urlencoded({
@@ -20,127 +22,71 @@ app.use(bodyParser.json());
 router.post('/pythonscripts', function (req, res, next) {
 
     /*Function to move files from inputs folder to input_processing folder*/
-   
-    moveFile(req.body); //callback of moveFile function
-    processData(); //callback of processData function
-    /* var message = {
-        "Message": "Success"
-    };
-    res.send(message);*/
-});
-
-
-function moveFile(files) {
-    var dirpath = './inputs/';
-    var dir2 = './input_processing';
-    console.log(files);
-    files.forEach(function (file) {
-        //console.log(file);
-        //var fileExtension = 'pdf';
-        var file_name = file.name;
-        console.log(file_name);
-        var total_path = dirpath + file_name;
-        console.log(total_path);
-        var data = (file_name, dir2) => {
-            //gets file name and adds it to dir2
-            var f = path.basename(file_name);
-            var dest = path.resolve(dir2, f);
-            fs.rename(file_name, dest, (err) => {
-                if (err) {} else {
-                    console.log('Successfully moved');
-                    var testFolder = './input_processing/';
-                    fs.readdir(testFolder, (err, files) => {
-                        files.forEach(file => {
-                            //console.log(file);
-                            updatefilesjson(file, "In_process"); //callback of updatefilesjson function
-                        });
-                    });
-                }
-            });
-        }
-        data(total_path, dir2); //callback of data function
-    });
-}
-
-/*Function to run python scripts*/
-function processData() {
-    var myPythonScriptPath = './scripts/P_Extract_Discounts.py';
-    //console.log(myPythonScriptPath);
-    var pyshell = new PythonShell(myPythonScriptPath);
-    pyshell.on('message', function (message) {
-        console.log(message);
-    });
-    pyshell.end(function (err) {
-        if (err) {
-            var testFolder = './input_processing/';
-            fs.readdir(testFolder, (err, files) => {
-                files.forEach(file => {
-                    console.log(file);
-                    updatefilesjson(file, "process_failed"); //callback of updatefilesjson function
-                });
-            });
-            backtrack(); //callback of bactrack function
-        } else {
-            var testFolder1 = './processed/';
-            fs.readdir(testFolder1, (err, files) => {
-                files.forEach(file => {
-                    console.log(file);
+    var a = req.body;
+    var arg=[];
+   for (var i = 0; i < a.length; i++) {
+       arg [i]= a[i].name; 
+       console.log(arg);
+       
+      updatefilesjson(arg[i], "In_process");
+      loadProcess(i);
+   }
+   function loadProcess(i){
+    return new bbPromise(function(resolve, reject) {
+          var process = spawn('python',["./scripts/P_Extract_Discounts.py",arg[i]] );
+    
+          process.stdout.on('data', function(data) {
+               console.log(data.toString());
+            //    var testFolder1 = './processed/';
+            // fs.readdir(testFolder1, (err, files) => {
+            //     files.forEach(file => {
+            //         console.log(file);
                     //updatefilesjson(file, "processed"); //callback of updatefilesjson function
-                    deletefilesjson(file); //callback of deletefilesjson function
+                    deletefilesjson(arg[i]); //callback of deletefilesjson function
 
 
                 });
-            })
-
-        }
-
-    });
-}
-
-/*Move data from input_processing folder to inputs*/
-function backtrack() {
-    var dirpath = './input_processing/';
-    var dir2 = './inputs/';
-    var myfiles = [];
-    var arrayOfFiles = fs.readdirSync('./input_processing/');
-    arrayOfFiles.forEach(function (file) {
-        myfiles.push(file);
-        //console.log(myfiles);
-        myfiles.forEach(function (file) {
-            //console.log(file);
-            var file_name = file;
-            //console.log(file_name);
-            var total_path = dirpath + file_name;
-            //console.log(total_path);
-            var f = path.basename(file_name);
-            var dest = path.resolve(dir2, f);
-            fs.rename('./input_processing/' + file_name, dest, (err) => {
-                if (err) {
-                    //throw err;
-                } else {
-                    console.log('Successfully moved');
-
-                }
-            });
+           // })
+          
+           // console.log("done");
+          //});
+    
+          process.stderr.on('data', function(err) {
+              console.log(arg[i]);
+              
+            reject(err.toString());
+            updatefilesjson(arg[i], "process_failed"); //callback of updatefilesjson function
+             //   });
+           // });
+            
+          });
+    
+          process.on('exit', function() {
+            resolve();
+          });
         });
-    });
-}
+    }
+      
 
-/*update json file*/
-function updatefilesjson(UpdateFilename, Status, callback) {
-    let data = [Status, UpdateFilename];
-    console.log(data);
-    let sql = `UPDATE FILES SET status = ? WHERE filename = ?`;
-    database.run(sql, data, function (err) {
-        if (err) {
-            console.error(err.message);
-        } else {
-            console.log(`Row(s) updated: ${this.changes}`);
-        }
-    });
-}
 
-/*Delete json file after processing*/
+
+      function updatefilesjson(UpdateFilename, Status, callback) {
+        let data = [Status, UpdateFilename];
+        console.log(data);
+        let sql = `UPDATE FILES SET status = ? WHERE filename = ?`;
+        database.run(sql, data, function (err) {
+            if (err) {
+                console.error(err.message);
+            } else {
+                console.log(`Row(s) updated: ${this.changes}`);
+            }
+       
+        });
+    }
+    
+   //console.log(arg);
+  
+   /*Delete json file after processing*/
 function deletefilesjson(removeFileName) {
     let filenamedata = removeFileName;
     // delete a row based on id
@@ -153,5 +99,59 @@ function deletefilesjson(removeFileName) {
 
    
 }
+
+
+    var commands = arg.map(function(value) {
+        //console.log(value);
+        return loadProcess.bind(null, value);
+    });
+    
+      return bbPromise.map(commands, function(command) {
+          //console.log(command);
+        //return command();
+      
+    })
+      .then(function() {
+        console.log('Child Processes Completed');
+      });
+
+    
+    });
+
+
+    
+
+
+
+    
+        
+    
+    
+
+      /*return new bbPromise(function(resolve, reject){
+        var spawn = require("child_process").spawn;
+     
+    // Parameters passed in spawn -
+    // 1. type_of_script
+    // 2. list containing Path of the script
+    //    and arguments for the script 
+     
+    // E.g : http://localhost:3000/name?firstname=Mike&lastname=Will
+    // so, first name = Mike and last name = Will
+    var process = spawn('python',["./scripts/P_Extract_Discounts.py",file] );
+ 
+    // Takes stdout data from script which executed
+    // with arguments and send this data to res object
+    process.stdout.on('data', function(data) {
+        console.log("done");
+        //res.send(data.toString());
+    })
+
+   }
+})
+
+});*/
+    
+
 
 module.exports = router;

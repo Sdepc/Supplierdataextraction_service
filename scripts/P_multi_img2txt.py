@@ -3,7 +3,7 @@ def Img2txt(path_in,path_out,tempf,image_name):
         import os
         import pytesseract
         import re
-        pytesseract.tesseract_cmd = 'C://Program Files (x86)//Tesseract-OCR//tesseract'
+        pytesseract.tesseract_cmd = "C://Program Files (x86)//Tesseract-OCR//tesseract"
         sep = "/"
 
         #get file extn
