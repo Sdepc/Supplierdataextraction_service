@@ -55,12 +55,26 @@ router.get('/getfilescontent', function (req, res, next) {
         database.all(`SELECT * FROM FILES WHERE status IN ('To be Processed','In_process')`, (err, row) => {
             if (err) {
                 console.error(err.message);
+                res.send(err.message);
             }
             res.send(row);
         });
     });
 });
-
+/* Delete File. */
+router.post('/deletefile', function (req, res) {
+    console.log(req);
+    var name = req.query.fname;
+    console.log(name);
+    database.run(`DELETE FROM FILES WHERE filename=?`, name, function (err) {
+        if (err) {
+            console.error(err.message);
+            res.send(err.message);
+        }
+        console.log(`Row(s) deleted ${this.changes}`);
+        res.send(`${this.changes}`)
+    });
+});
 //define global var
 var global = {};
 var files_data;
